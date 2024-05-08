@@ -15,7 +15,7 @@ const port = process.env.PORT || 5000 ;
 
 
 app.use(cors({
-    origin: ['http://localhost:5181'] ,
+    origin: ['http://localhost:5174'] ,
     credentials: true
 }));
 app.use(express.json());
@@ -75,15 +75,21 @@ app.post('/jwt' , logger , async(req,res)=>{
     const user  = req.body;
     console.log(user);
     const token = jwt.sign(user , process.env.ACCESS_TOKEN_SECRET , {expiresIn: '1h'})
-    res
-    .cookie('token' , token , {
-        httpOnly: true ,
-        secure: false ,
-        // sameSite: 'none' 
-    })
-    .send({success: true})
+    res.cookie('token' , token ,{
+         httpOnly: true ,
+         secure: true,
+         sameSite: 'none'
+    }).send({success: true});
 })
 
+
+app.post('/logout' , async(req,res)=>{
+       const user = req.body;
+       console.log('logging out' , user);
+       res
+       .clearCookie('token' , {maxAge: 0})
+       .send({success: true})
+})
 
 //  service
  app.get('/services' , logger , async(req,res)=>{
